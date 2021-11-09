@@ -1,0 +1,56 @@
+#
+# iRODS configuration
+#
+IRODS_VERSION=latest
+SODAR_ENABLE_IRODS=1
+IRODS_HOST=irods
+IRODS_PORT=1247
+# The admin credentials to use.  Is setup when container is first taken up
+# CHANGE FOR PRODUCTION: IRODS_PASS
+IRODS_USER=rods
+IRODS_PASS=rods
+# The zone name
+IRODS_ZONE=rodeosZone
+IRODS_CLIENT_SERVER_NEGOTIATION=off
+IRODS_CLIENT_SERVER_POLICY=CS_NEG_REFUSE
+# File system path to iRODS server certificate for creating iRODS client config (optional)
+IRODS_CERT_PATH=
+# iRODS authentication scheme
+IRODS_AUTHENTICATION_SCHEME=native
+# iRODS client SSL verification
+IRODS_SSL_VERIFY_SERVER=none
+# Secret keys used by iRODS.  CHANGE FOR PRODUCTION
+IRODS_ZONE_KEY=TEMPORARY_zone_key
+# iRODS keys. CHANGE FOR PRODUCTION
+IRODS_NEGOTIATION_KEY=TEMPORARY_32byte_negotiation_key
+IRODS_CONTROL_PLANE_KEY=TEMPORARY__32byte_ctrl_plane_key
+IRODS_PASSWORD_SALT=tempsalt
+# iRODS server SSL settings
+IRODS_SSL_CERTIFICATE_CHAIN_FILE=/etc/irods/server.crt
+IRODS_SSL_CERTIFICATE_KEY_FILE=/etc/irods/server.key
+IRODS_SSL_DH_PARAMS_FILE=/etc/irods/dhparams.pem
+
+# Path for SODAR collections within zone (leave empty if in zone root)
+IRODS_ROOT_PATH=
+# Additional env variables for backend iRODS connections (optional)
+IRODS_ENV_BACKEND=
+# Additional env variables for creating iRODS client config in SODAR (optional)
+IRODS_ENV_CLIENT=
+
+#
+# Enable and configure WebDAV support (optional)
+#
+SODAR_IRODS_WEBDAV_ENABLED=0
+SODAR_IRODS_WEBDAV_URL=
+IRODS_WEBDAV_URL_ANON=
+IRODS_WEBDAV_USER_ANON=
+
+#
+# Postgres credentials.
+#
+# Can remain as they are for docker based deployments
+#
+POSTGRES_HOST=postgres
+POSTGRES_PORT=5432
+POSTGRES_USERNAME=irods
+POSTGRES_PASSWORD=irods
