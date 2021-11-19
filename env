@@ -29,6 +29,8 @@ IRODS_PASSWORD_SALT=tempsalt
 IRODS_SSL_CERTIFICATE_CHAIN_FILE=/etc/irods/server.crt
 IRODS_SSL_CERTIFICATE_KEY_FILE=/etc/irods/server.key
 IRODS_SSL_DH_PARAMS_FILE=/etc/irods/dhparams.pem
+# set hash algo to sha256
+IRODS_DEFAULT_HASH_SCHEME=sha256
 
 # Path for SODAR collections within zone (leave empty if in zone root)
 IRODS_ROOT_PATH=
