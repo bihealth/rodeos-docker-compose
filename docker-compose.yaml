@@ -5,7 +5,7 @@ x-rodeos: &default-rodeos
   #image: ghcr.io/bihealth/rodeos-server:${RODEOS_VERSION}
   image: rodeos-ingest:001
   environment: &default-rodeos-environment
-    WAIT_HOSTS: "postgres:5432, redis:6379"
+    WAIT_HOSTS: "postgres:5432, redis:6379, irods:1247"
     LC_ALL: en_US.UTF-8
     CELERY_BROKER_URL: redis://redis:6379/0
     CELERY_CHDIR: /usr/src/app
