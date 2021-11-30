@@ -2,8 +2,8 @@ version: "3.7"
 
 # Define default configuration for RODEOS.
 x-rodeos: &default-rodeos
-  #image: ghcr.io/bihealth/rodeos-ingest:${RODEOS_VERSION}
-  image: rodeos-ingest:${RODEOS_VERSION}
+  image: ghcr.io/bihealth/rodeos-ingest:${RODEOS_VERSION}
+  #image: rodeos-ingest:${RODEOS_VERSION}
   environment: &default-rodeos-environment
     WAIT_HOSTS: "postgres:5432, redis:6379, irods:1247"
     LC_ALL: en_US.UTF-8
@@ -49,7 +49,7 @@ services:
       IRODS_ICAT_DBPASS: ${POSTGRES_PASSWORD}
       IRODS_ADMIN_USER: ${IRODS_USER}
       IRODS_ADMIN_PASS: ${IRODS_PASS}
-      IRODS_ZONE_NAME: rodeosZone
+      IRODS_ZONE_NAME: ${IRODS_ZONE_NAME}
       IRODS_AUTHENTICATION_SCHEME: ${IRODS_AUTHENTICATION_SCHEME}
       IRODS_CLIENT_SERVER_NEGOTIATION: ${IRODS_CLIENT_SERVER_NEGOTIATION}
       IRODS_CLIENT_SERVER_POLICY: ${IRODS_CLIENT_SERVER_POLICY}

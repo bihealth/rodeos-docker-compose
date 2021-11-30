@@ -1,4 +1,4 @@
-RODEOS_VERSION=latest
+RODEOS_VERSION=0.1.0-0
 #
 # iRODS configuration
 #
@@ -11,7 +11,7 @@ IRODS_PORT=1247
 IRODS_USER=rods
 IRODS_PASS=rods
 # The zone name
-IRODS_ZONE=rodeosZone
+IRODS_ZONE_NAME=tempZone
 IRODS_CLIENT_SERVER_NEGOTIATION=off
 IRODS_CLIENT_SERVER_POLICY=CS_NEG_REFUSE
 # File system path to iRODS server certificate for creating iRODS client config (optional)
