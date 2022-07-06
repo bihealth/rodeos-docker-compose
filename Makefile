@@ -7,6 +7,12 @@ print:
 	-f docker-compose.override.yaml.metalnx \
 	config
 
+.PHONY: minimal
+minimal:
+	docker-compose --env-file env \
+	-f docker-compose.yaml \
+	up -d
+
 .PHONY: up
 up:
 	docker-compose --env-file env \
