@@ -1,10 +1,16 @@
-version: "3.7"
+version: "3.8"
 
 # Define default configuration for RODEOS.
 x-rodeos: &default-rodeos
+  command: run-tests
+  #command: sleep infinity
+  #command: run-ingest
   image: ghcr.io/bihealth/rodeos-ingest:${RODEOS_VERSION}
-  #image: rodeos-ingest:${RODEOS_VERSION}
+  #image: rodeos-ingest:debug
   environment: &default-rodeos-environment
+    RODEOS_INGEST_PATH: ${RODEOS_INGEST_PATH}
+    RODEOS_EVENT_HANDLER: ${RODEOS_EVENT_HANDLER}
+    RODEOS_TARGET_COLLECTION: ${RODEOS_TARGET_COLLECTION}
     WAIT_HOSTS: "postgres:5432, redis:6379, irods:1247"
     LC_ALL: en_US.UTF-8
     CELERY_BROKER_URL: redis://redis:6379/0
@@ -12,19 +18,13 @@ x-rodeos: &default-rodeos
     CELERY_CREATE_DIRS: "1"
     DATABASE_URL: postgresql://${POSTGRES_USERNAME}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}/rodeos
     CONN_MAX_AGE: "0"
+    IRODS_AUTHENTICATION_SCHEME: ${IRODS_AUTHENTICATION_SCHEME}
+    IRODS_DEFAULT_HASH_SCHEME: ${IRODS_DEFAULT_HASH_SCHEME}
     IRODS_HOST: ${IRODS_HOST}
     IRODS_PORT: ${IRODS_PORT}
     IRODS_USER: ${IRODS_USER}
     IRODS_PASS: ${IRODS_PASS}
     IRODS_ZONE_NAME: ${IRODS_ZONE_NAME}
-    IRODS_ROOT_PATH: ${IRODS_ROOT_PATH}
-    IRODS_ENV_BACKEND: ${IRODS_ENV_BACKEND}
-    IRODS_ENV_CLIENT: ${IRODS_ENV_CLIENT}
-    IRODS_CERT_PATH: ${IRODS_CERT_PATH}
-    IRODS_WEBDAV_ENABLED: ${SODAR_IRODS_WEBDAV_ENABLED}
-    IRODS_WEBDAV_URL: ${SODAR_IRODS_WEBDAV_URL}
-    IRODS_WEBDAV_URL_ANON: ${IRODS_WEBDAV_URL_ANON}
-    IRODS_WEBDAV_USER_ANON: ${IRODS_WEBDAV_USER_ANON}
   networks:
     - rodeos
   restart: unless-stopped
@@ -33,15 +33,15 @@ services:
   rodeos:
     <<: *default-rodeos
     depends_on:
-      - postgres
       - redis
-      - irods 
+      - irods
 
   irods:
     image: ghcr.io/bihealth/irods-docker:${IRODS_VERSION}
     ports:
       - "1247:1247"
     hostname: irods  # iRODS really does not like the hash names
+    command: irods-start
     environment:
       IRODS_HOST_NAME: irods
       IRODS_ICAT_DBSERVER: ${POSTGRES_HOST}
