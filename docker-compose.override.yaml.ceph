@@ -1,0 +1,15 @@
+# docker-compose.override.yaml fragment for running irods vault on cephfs-2
+version: "3.8"
+
+services:
+  irods:
+    volumes:
+      - type: bind
+        source: /data/cephfs-2/irods_vault_TEST
+        target: /data/Vault
+
+  rodeos:
+    volumes:
+      - type: bind
+        source: /data/cephfs-2-shares/cha
+        target: /data/cephfs-2-shares/cha

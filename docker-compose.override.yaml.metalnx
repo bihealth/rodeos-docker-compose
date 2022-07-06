@@ -1,0 +1,71 @@
+version: "3.8"
+
+# metalnx runs on port 8080, + the /metalnx subdirectory.
+# We will use traefik to route incoming connections to 443 over SSL
+
+services:
+  metalnx-database:
+    image: postgres:11
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: metalnx_pg
+      POSTGRES_USER: metalnx_pg
+      POSTGRES_DB: irods-ext
+    volumes:
+    - ./volumes/postgres-metalnx/data:/var/lib/postgresql/data
+    networks:
+      - rodeos
+
+  metalnx:
+    #image: myimages/metalnx:latest
+    image: irods/metalnx:latest
+    depends_on:
+      - metalnx-database
+      - irods
+    restart: always
+    volumes:
+      - ./config/metalnx-configuration:/etc/irods-ext
+      - ./config/irods/etc/server.crt:/tmp/cert/server.crt
+    networks:
+      - rodeos
+    #ports:
+    #  - 8080:8080
+    labels:
+    - "traefik.enable=true"
+    - "traefik.http.services.metalnx.loadbalancer.server.port=8080"
+    - "traefik.http.routers.metalnx.rule=Host(`rodeos-staging.cubi.bihealth.org`)"
+    - "traefik.http.routers.metalnx.tls=true"
+    - "traefik.http.middlewares.add-foo.addprefix.prefix=/metalnx"
+
+  traefik:
+    image: traefik:v2.3.1
+    ports:
+    - 80:80
+    - 443:443
+    - 8080:8080
+    networks:
+    - rodeos
+    restart: unless-stopped
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
+      - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
+      - "--providers.file.directory=/etc/traefik/tls"
+      - "--providers.file.watch=true"
+    volumes:
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+        read_only: true
+      - type: bind
+        source: ./config/traefik
+        target: /etc/traefik
+      - type: bind
+        source: ./config/irods/etc
+        target: /etc/traefik/tls/
+        read_only: true

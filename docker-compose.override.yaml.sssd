@@ -1,0 +1,34 @@
+version: "3.8"
+
+services:
+  sssd:
+    image: ghcr.io/bihealth/sssd-docker:${SSSD_VERSION}
+    restart: unless-stopped
+    networks:
+      - rodeos
+    volumes:
+      - type: bind  # SSSD config, copied to /etc/sssd
+        source: ./config/sssd/sssd.conf
+        target: /etc/sssd.in/sssd.conf
+        read_only: true
+      - type: volume
+        source: sssd-sockets
+        target: /var/lib/sss
+  irods:
+    environment:
+      #IRODS_SSL_VERIFY_SERVER: ${IRODS_SSL_VERIFY_SERVER}
+      #IRODS_SSL_CERTIFICATE_CHAIN_FILE: ${IRODS_SSL_CERTIFICATE_CHAIN_FILE}
+      #IRODS_SSL_CERTIFICATE_KEY_FILE: ${IRODS_SSL_CERTIFICATE_KEY_FILE}
+      #IRODS_SSL_DH_PARAMS_FILE: ${IRODS_SSL_DH_PARAMS_FILE}
+      IRODS_SSSD_AUTH: ${IRODS_SSSD_AUTH}
+      #IRODS_SODAR_AUTH: ${IRODS_SODAR_AUTH}
+    depends_on:
+      - postgres
+      - sssd
+    volumes:
+      - type: volume
+        source: sssd-sockets
+        target: /var/lib/sss
+volumes:
+  sssd-sockets:
+
