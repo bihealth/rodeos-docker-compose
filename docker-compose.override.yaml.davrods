@@ -1,0 +1,40 @@
+# docker-compose.override.yaml fragment for running davrods from docker-compose
+version: "3.8"
+
+services:
+  davrods:
+    image: ghcr.io/bihealth/davrods-docker:${DAVRODS_VERSION}
+    hostname: davrods
+    environment:
+      IRODS_HOST_NAME: ${IRODS_HOST}
+      IRODS_ZONE_PORT: ${IRODS_PORT}
+      IRODS_ZONE_NAME: ${IRODS_ZONE_NAME}
+      IRODS_SSL_VERIFY_SERVER: ${IRODS_SSL_VERIFY_SERVER}
+      IRODS_AUTHENTICATION_SCHEME: ${IRODS_AUTHENTICATION_SCHEME}
+      IRODS_CLIENT_SERVER_NEGOTIATION: ${IRODS_CLIENT_SERVER_NEGOTIATION}
+      IRODS_CLIENT_SERVER_POLICY: ${IRODS_CLIENT_SERVER_POLICY}
+      IRODS_SSL_CA_CERT_PATH: ${IRODS_CERT_PATH}
+      DAVRODS_ENABLE_TICKETS: ${DAVRODS_ENABLE_TICKETS}
+      DAVRODS_AUTH_NAME: ${DAVRODS_AUTH_NAME}
+    depends_on:
+      - irods
+    networks:
+      - rodeos
+    restart: unless-stopped
+    shm_size: '2gb'
+    volumes:
+      - type: bind
+        source: ./volumes/davrods/theme
+        target: /etc/httpd/irods/theme
+      - type: bind  # Traefik configuration for shared certs
+        source: ./volumes/traefik/tls
+        target: /etc/traefik/tls
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.middlewares.xforward.headers.customrequestheaders.X-Forwarded-Proto=https"
+      - "traefik.http.routers.davrods.entrypoints=websecure"
+      - "traefik.http.routers.davrods.middlewares=xforward"
+      - "traefik.http.routers.davrods.rule=(HostRegexp(`{catchall:.+}`) && PathPrefix(`/tempZone`))"
+      - "traefik.http.services.davrods.loadbalancer.server.port=80"
+      - "traefik.http.routers.davrods.tls=true"
+      - "traefik.http.routers.davrods.priority=100"
