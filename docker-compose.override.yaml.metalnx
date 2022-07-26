@@ -33,9 +33,10 @@ services:
     labels:
     - "traefik.enable=true"
     - "traefik.http.services.metalnx.loadbalancer.server.port=8080"
-    - "traefik.http.routers.metalnx.rule=Host(`rodeos-staging.cubi.bihealth.org`)"
+    - "traefik.http.routers.metalnx.service=metalnx"
+    - "traefik.http.routers.metalnx.entrypoints=websecure"
     - "traefik.http.routers.metalnx.tls=true"
-    - "traefik.http.middlewares.add-foo.addprefix.prefix=/metalnx"
+    - "traefik.http.routers.metalnx.rule=Host(`rodeos-staging.cubi.bihealth.org`)"
 
   traefik:
     image: traefik:v2.3.1
@@ -55,7 +56,7 @@ services:
       - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
       - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
       - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
-      - "--providers.file.directory=/etc/traefik/tls"
+      - "--providers.file.directory=/etc/traefik"
       - "--providers.file.watch=true"
     volumes:
       - type: bind

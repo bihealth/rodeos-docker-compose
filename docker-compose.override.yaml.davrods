@@ -18,6 +18,7 @@ services:
       DAVRODS_AUTH_NAME: ${DAVRODS_AUTH_NAME}
     depends_on:
       - irods
+      - traefik
     networks:
       - rodeos
     restart: unless-stopped
@@ -27,14 +28,12 @@ services:
         source: ./volumes/davrods/theme
         target: /etc/httpd/irods/theme
       - type: bind  # Traefik configuration for shared certs
-        source: ./volumes/traefik/tls
+        source: ./config/irods/etc/
         target: /etc/traefik/tls
     labels:
       - "traefik.enable=true"
-      - "traefik.http.middlewares.xforward.headers.customrequestheaders.X-Forwarded-Proto=https"
       - "traefik.http.routers.davrods.entrypoints=websecure"
-      - "traefik.http.routers.davrods.middlewares=xforward"
-      - "traefik.http.routers.davrods.rule=(HostRegexp(`{catchall:.+}`) && PathPrefix(`/tempZone`))"
-      - "traefik.http.services.davrods.loadbalancer.server.port=80"
+      - "traefik.http.routers.davrods.rule=(Host(`rodeos-staging.cubi.bihealth.org`) && PathPrefix(`/tempZone`))"
+      - "traefik.http.routers.davrods.service=davrods"
       - "traefik.http.routers.davrods.tls=true"
-      - "traefik.http.routers.davrods.priority=100"
+      - "traefik.http.services.davrods.loadbalancer.server.port=80"
